@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-
+set -euo pipefail
+IFS=$'\n\t'
 
 # WARNING: before running this script, make sure you have the correct
 # workspace configured as well as your AWS profile with valid creds.
@@ -30,8 +31,11 @@ rm "${tfplan_out}"
 
 # create script
 script_name="migrate.sh"
-echo '#!/usr/bin/env bash' > "${script_name}"
-chmod +x "${script_name}"
+cat << EOF > "${script_name}"
+#!/usr/bin/env bash
+set -euo pipefail
+IFS=$'\n\t'
+EOF
 
 sg_filter=$(mktemp)
 cat << EOF > "${sg_filter}"
@@ -43,7 +47,7 @@ security_groups=$(jq -r -f "${sg_filter}" <<< "${current_state}")
 rm "${sg_filter}"
 
 # validate that the AWS_PROFILE is set to the correct profile and that
-# you have valid credentials. we need to specify the environment (dev, demo, test, stage, perf, prod) and which workstream (eps, reg, rec, cprs, lds)
+# you have valid credentials.
 {
     echo
     echo '# 1. remove the security groups from state'

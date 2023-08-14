@@ -1,29 +1,11 @@
-variable "common_tags" {}
-variable "resource_name" {}
-
-variable "vpc_id" {}
-
-variable "allowed_cidrs" {
-  type    = list(map(string))
-  default = []
-}
-variable "allowed_sgs" {
-  type    = list(map(string))
-  default = []
-}
-variable "public_cidr_block" {
-  default = "0.0.0.0/0"
-}
-
-variable "allowed_v6_cidrs" {
-  type    = list(map(string))
-  default = []
-}
-
 resource "aws_security_group" "sg" {
-  name        = "${var.common_tags.ClusterName}-${var.resource_name}"
+  name        = "the security group"
   description = var.resource_name
   vpc_id      = var.vpc_id
+  tags = {
+    Application = "demo"
+  }
+
 
   dynamic "ingress" {
     for_each = length(var.allowed_cidrs) < 1 ? [] : [for ing in var.allowed_cidrs : {
@@ -75,27 +57,15 @@ resource "aws_security_group" "sg" {
       description     = ingress.value.desc
     }
   }
-
-  tags = merge(
-    var.common_tags,
-    tomap({
-      Name = "${var.common_tags.ClusterName}-${var.resource_name}" }
-    )
-  )
 }
 
-resource "aws_security_group_rule" "outbound" {
-  type        = "egress"
-  description = "Allow all outbound traffic"
-  from_port   = 0
-  to_port     = 0
-  protocol    = "-1"
-  # We are allowing all outbound for the program
-  #tfsec:ignore:aws-vpc-no-public-egress-sgr
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.sg.id
-}
+# resource "aws_security_group_rule" "outbound" {
+#   type        = "egress"
+#   description = "Allow all outbound traffic"
+#   from_port   = 0
+#   to_port     = 0
+#   protocol    = "-1"
+#   cidr_blocks       = ["0.0.0.0/0"]
+#   security_group_id = aws_security_group.sg.id
+# }
 
-output "sg" {
-  value = aws_security_group.sg
-}

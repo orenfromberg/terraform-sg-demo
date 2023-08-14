@@ -1,13 +1,9 @@
 # terraform-sg-demo
 
-1. set the `vpc_id` and `common_tags` in `vars.tfvars`:
+1. set the `vpc_id` in `vars.tfvars`:
 
 ```
 vpc_id = "vpc-xxxxxxxx"
-common_tags = {
-  Application = "terraform-sg-demo"
-  ClusterName = "my-cluster"
-}
 ```
 
 2. initialize the terraform backend:
