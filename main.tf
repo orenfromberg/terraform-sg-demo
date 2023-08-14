@@ -14,16 +14,16 @@ provider "aws" {
 
 locals {
   allowed_https_cidrs = [
-    for cidr_ip in var.https_cidrs : {
-      cidr     = cidr_ip,
+    for https_cidr in var.https_cidrs : {
+      cidr     = https_cidr,
       port     = 443,
       protocol = "tcp",
       desc     = "an allowed HTTPS CIDR"
   }]
 
   allowed_https_ips = [
-    for nat_ip in var.https_ips : {
-      cidr     = format("%s/32", nat_ip),
+    for https_ip in var.https_ips : {
+      cidr     = format("%s/32", https_ip),
       port     = 443,
       protocol = "tcp",
       desc     = "an allowed HTTPS IP"
