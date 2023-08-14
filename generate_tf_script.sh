@@ -37,17 +37,14 @@ set -euo pipefail
 IFS=$'\n\t'
 EOF
 
+# cache the security groups that have inline rules
 sg_filter=$(mktemp)
 cat << EOF > "${sg_filter}"
 .. | select((type == "object") and (.type == "aws_security_group") and (.name == "${sg_name}"))
 EOF
-
-# this line will cache all the security groups that have inline rules
 security_groups=$(jq -r -f "${sg_filter}" <<< "${current_state}")
 rm "${sg_filter}"
 
-# validate that the AWS_PROFILE is set to the correct profile and that
-# you have valid credentials.
 {
     echo
     echo '# 1. remove the security groups from state'
